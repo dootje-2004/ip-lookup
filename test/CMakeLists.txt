@@ -1,5 +1,5 @@
 set(Sources
-main.cpp ip.cpp
+main.cpp ipv4.cpp
 )
 
 set(TestName hello-test)
@@ -8,8 +8,6 @@ add_executable(${TestName} ${Sources})
 
 target_link_libraries(${TestName} PUBLIC
     gtest_main
-    # Add your library to test here
-    # ExampleNestedTopLib
     iplib
 )
 

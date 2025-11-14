@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include "ip.h"
 
-ipv4_t read_ipv4(char *ip)
+ipv4_t read_ipv4(const char *ip)
 {
     ipv4_t ipv4;    // IPv4 address
     char c;         // ip character being evaluated
@@ -15,7 +15,7 @@ ipv4_t read_ipv4(char *ip)
     uint8_t b = 0;  // position in group substring
     
     ipv4.ip = 0;
-    ipv4.umask = 0;
+    ipv4.mask = 32;
     
     while (1)
     {
@@ -97,7 +97,7 @@ ipv4_t read_ipv4(char *ip)
                     fprintf(stderr, "IPv4 string %s has a mask of more than 32 bits: %d\n", ip, d);
                     goto error_handler;
                 }
-                ipv4.umask = 32 - d;
+                ipv4.mask = d;
                 goto final_check;
             default:
                 fprintf(stderr, "IPv4 string %s has an invalid character '%c' (%d) at position %d\n", ip, c, c, p-1);
@@ -114,6 +114,6 @@ final_check:
 
 error_handler:
     ipv4.ip = 0;
-    ipv4.umask = 0;
+    ipv4.mask = 0;
     return ipv4;
 }

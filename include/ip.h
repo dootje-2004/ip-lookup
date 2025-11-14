@@ -9,16 +9,16 @@ enum ip_t {
 
 typedef struct {
     uint32_t ip;
-    uint8_t umask;
+    uint8_t mask;
 } ipv4_t;
 
 typedef struct {
     uint64_t group[8];
-    uint8_t umask;
+    uint8_t mask;
 } ipv6_t;
 
-ipv4_t read_ipv4(char*);
+ipv4_t read_ipv4(const char*);
 
-ipv6_t read_ipv6(char*);
+// ipv6_t read_ipv6(char*);
 
 #endif
