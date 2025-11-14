@@ -14,7 +14,6 @@ ipv4_t read_ipv4(const char *ip)
     uint8_t g = 1;  // group index
     uint8_t b = 0;  // position in group substring
     
-    ipv4.ip = 0;
     ipv4.mask = 32;
     
     while (1)
@@ -116,4 +115,22 @@ error_handler:
     ipv4.ip = 0;
     ipv4.mask = 0;
     return ipv4;
+}
+
+ipv6_t read_ipv6(const char *ip)
+{
+    ipv6_t ipv6;    // IPv6 address
+    // char c;         // ip character being evaluated
+    // uint8_t p = 0;  // position in ip string
+    // int16_t d = -1; // decimal group value
+    uint8_t g;      // group index
+    // uint8_t b = 0;  // position in group substring
+    
+    for (g = 0; g < 8; g++)
+    {
+        ipv6.group[g] = -1;
+    }
+    ipv6.mask = 128;
+
+    return ipv6;
 }

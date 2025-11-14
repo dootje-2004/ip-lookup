@@ -1,5 +1,5 @@
 set(Sources
-main.cpp ipv4.cpp
+main.cpp ipv4.cpp ipv6.cpp
 )
 
 set(TestName hello-test)
