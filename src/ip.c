@@ -5,11 +5,11 @@
 #include <ctype.h>
 #include "ip.h"
 
-ipv4_t read_ipv4(const char *ip)
+ipv4_t read_ipv4(const char *s)
 {
     ipv4_t ipv4;    // IPv4 address
-    char c;         // ip character being evaluated
-    uint8_t p = 0;  // position in ip string
+    char c;         // character being evaluated
+    uint8_t p = 0;  // position in s string
     int16_t d = -1; // decimal group value
     uint8_t g = 1;  // group index
     uint8_t b = 0;  // position in group substring
@@ -18,7 +18,7 @@ ipv4_t read_ipv4(const char *ip)
     
     while (1)
     {
-        c = ip[p++];
+        c = s[p++];
         switch (c)
         {
             case '0':
@@ -33,7 +33,7 @@ ipv4_t read_ipv4(const char *ip)
             case '9':
                 if ((d == 0) && (b > 0))
                 {
-                    fprintf(stderr, "IPv4 string %s, block %d: leading zeroes are not allowed\n", ip, g);
+                    fprintf(stderr, "IPv4 string %s, group %d: leading zeroes are not allowed\n", s, g);
                     goto error_handler;
                 }
                 if (d == -1)
@@ -42,7 +42,7 @@ ipv4_t read_ipv4(const char *ip)
                 }
                 d = d * 10 + (c - '0');
                 if (d > 255) {
-                    fprintf(stderr, "IPv4 string %s: block %d has a value greater than 255: %d\n", ip, g, d);
+                    fprintf(stderr, "IPv4 string %s: group %d has a value greater than 255: %d\n", s, g, d);
                     goto error_handler;
                 }
                 b++;
@@ -50,7 +50,7 @@ ipv4_t read_ipv4(const char *ip)
             case '.':
                 if (d == -1)
                 {
-                    fprintf(stderr, "IPv4 string %s: block %d is empty\n", ip, g);
+                    fprintf(stderr, "IPv4 string %s: group %d is empty\n", s, g);
                     goto error_handler;
                 }
                 ipv4.ip = (ipv4.ip << 8) + d;
@@ -61,7 +61,7 @@ ipv4_t read_ipv4(const char *ip)
             case '\0':
                 if (d == -1)
                 {
-                    fprintf(stderr, "IPv4 string %s: block %d is empty\n", ip, g);
+                    fprintf(stderr, "IPv4 string %s: group %d is empty\n", s, g);
                     goto error_handler;
                 }
                 ipv4.ip = (ipv4.ip << 8) + d;
@@ -69,44 +69,43 @@ ipv4_t read_ipv4(const char *ip)
             case '/':
                 if (d == -1)
                 {
-                    fprintf(stderr, "IPv4 string %s: block %d is empty\n", ip, g);
+                    fprintf(stderr, "IPv4 string %s: group %d is empty\n", s, g);
                     goto error_handler;
                 }
                 ipv4.ip = (ipv4.ip << 8) + d;
-                d = 0;
-                while ((c = ip[p++]) != '\0')
+                ipv4.ps = 0;
+                while ((c = s[p++]) != '\0')
                 {
                     if (c >= '0' && c <= '9')
                     {
-                        d = 10 * d + (c - '0');
+                        ipv4.ps = 10 * ipv4.ps + (c - '0');
                     }
                     else
                     {
-                        fprintf(stderr, "IPv4 %s: invalid character '%c' (%d) in ps\n", ip, c, c);
+                        fprintf(stderr, "IPv4 %s: invalid character '%c' (%d) in prefix size\n", s, c, c);
                         goto error_handler;
                     }
                 }
-                if (d == 0)
-                {
-                    fprintf(stderr, "IPv4 string %s has a zero-bit ps\n", ip);
-                    goto error_handler;
-                }
-                if (d > 32)
-                {
-                    fprintf(stderr, "IPv4 string %s has a ps of more than 32 bits: %d\n", ip, d);
-                    goto error_handler;
-                }
-                ipv4.ps = d;
                 goto final_check;
             default:
-                fprintf(stderr, "IPv4 string %s has an invalid character '%c' (%d) at position %d\n", ip, c, c, p-1);
+                fprintf(stderr, "IPv4 string %s has an invalid character '%c' (%d) at position %d\n", s, c, c, p-1);
                 goto error_handler;
         }
     }
 
 final_check:
     if (g != 4) {
-        fprintf(stderr, "IPv4 string %s has %d blocks instead of 4\n", ip, g);
+        fprintf(stderr, "IPv4 string %s has %d groups instead of 4\n", s, g);
+        goto error_handler;
+    }
+    if (ipv4.ps == 0)
+    {
+        fprintf(stderr, "IPv4 string %s has missing or zero prefix size\n", s);
+        goto error_handler;
+    }
+    if (ipv4.ps > 32)
+    {
+        fprintf(stderr, "IPv4 string %s has a prefix size of more than 32 bits: %d\n", s, ipv4.ps);
         goto error_handler;
     }
     return ipv4;
@@ -117,24 +116,25 @@ error_handler:
     return ipv4;
 }
 
-ipv6_t read_ipv6(const char *ip)
+ipv6_t read_ipv6(const char *s)
 {
     ipv6_t ipv6;    // IPv6 address
-    char c;         // ip character being evaluated
+    char c;         // character being evaluated
     uint8_t p = 0;  // position in ip string
     uint8_t g = 0;  // group index
-    uint8_t b = 0;  // position in group substring
+    uint8_t b = 0;  // number of group characters read
+    int8_t z = -1;  // group index of "::" substring
     
     for (g = 0; g < 8; g++)
     {
         ipv6.ip[g] = 0;
     }
     ipv6.ps = 128;
-
     g = 0;
+
     while (1)
     {
-        c = ip[p++];
+        c = tolower(s[p++]);
         switch (c)
         {
             case '0':
@@ -160,21 +160,91 @@ ipv6_t read_ipv6(const char *ip)
                 b++;
                 break;
             case ':':
-                b = 0;
                 g++;
+                if (s[p] == ':')
+                {
+                    if (z == -1)
+                    {
+                        p++;
+                        z = g;
+                    }
+                    else
+                    {
+                        fprintf(stderr, "IPv6 string %s has multiple double colons\n", s);
+                        goto error_handler;
+                    }
+                }
+                else
+                {
+                    if (p == 1)
+                    {
+                        fprintf(stderr, "IPv6 string %s must not start with a single colon\n", s);
+                        goto error_handler;
+                    }
+                }
+                b = 0;
                 break;
             case '/':
+                if ((b == 0) && (z != g))
+                {
+                    fprintf(stderr, "IPv6 string %s ends with empty group\n", s);
+                    goto error_handler;
+                }
+                ipv6.ps = 0;
+                while ((c = s[p++]) != '\0')
+                {
+                    if (c >= '0' && c <= '9')
+                    {
+                        ipv6.ps = 10 * ipv6.ps + (c - '0');
+                    }
+                    else
+                    {
+                        fprintf(stderr, "IPv6 %s: invalid character '%c' (%d) in prefix size\n", s, c, c);
+                        goto error_handler;
+                    }
+                }
+                goto final_check;
             case '.':
+                break;
             case '\0':
+                if ((b == 0) && (z != g))
+                {
+                    fprintf(stderr, "IPv6 string %s ends with empty group\n", s);
+                    goto error_handler;
+                }
                 goto final_check;
             default:
-                fprintf(stderr, "IPv6 string %s has an invalid character '%c' (%d) at position %d\n", ip, c, c, p-1);
+                fprintf(stderr, "IPv6 string %s has an invalid character '%c' (%d) at position %d\n", s, c, c, p-1);
                 goto error_handler;
         }
     }
 
 final_check:
-    // TODO: Check number of groups, expand ::
+    if (z > -1)
+    {
+        for (uint8_t i = 7; i >= z+7-g; i--)
+        {
+            ipv6.ip[i] = ipv6.ip[i-(7-g)];
+            ipv6.ip[i-(7-g)] = 0;
+        }
+        fprintf(stderr, "Prefix size after shift is %d\n", ipv6.ps);
+        g = 7;
+    }
+    if (g != 7)
+    {
+        fprintf(stderr, "IPv6 string %s must have 8 groups, found %d\n", s, g+1);
+        goto error_handler;
+    }
+    if (ipv6.ps == 0)
+    {
+        fprintf(stderr, "IPv6 string %s has missing or zero prefix size\n", s);
+        goto error_handler;
+    }
+    if (ipv6.ps > 128)
+    {
+        fprintf(stderr, "IPv6 string %s has a prefix size of more than 128 bits: %d\n", s, ipv6.ps);
+        goto error_handler;
+    }
     return ipv6;
 
 error_handler:

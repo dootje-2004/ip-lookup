@@ -27,21 +27,21 @@ TEST(IPv4Suite, ValidIPv4WithMask)
     EXPECT_EQ(ip.ps, 24);
 }
 
-TEST(IPv4Suite, InvalidIPv4BlockTooLarge)
+TEST(IPv4Suite, InvalidIPv4GroupTooLarge)
 {
     ipv4_t ip = read_ipv4("100.200.100.300/24");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4TooFewBlocks)
+TEST(IPv4Suite, InvalidIPv4TooFewGroups)
 {
     ipv4_t ip = read_ipv4("100.200.100");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4TooManyBlocks)
+TEST(IPv4Suite, InvalidIPv4TooManyGroups)
 {
     ipv4_t ip = read_ipv4("100.200.100.200.100");
     EXPECT_EQ(ip.ip, 0);
@@ -69,28 +69,28 @@ TEST(IPv4Suite, InvalidIPv4MaskIs0)
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyFirstBlock)
+TEST(IPv4Suite, InvalidIPv4EmptyFirstGroup)
 {
     ipv4_t ip = read_ipv4(".200.100.200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptySecondBlock)
+TEST(IPv4Suite, InvalidIPv4EmptySecondGroup)
 {
     ipv4_t ip = read_ipv4("100..100.200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyThirdBlock)
+TEST(IPv4Suite, InvalidIPv4EmptyThirdGroup)
 {
     ipv4_t ip = read_ipv4("100.200..200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyFourthBlock)
+TEST(IPv4Suite, InvalidIPv4EmptyFourthGroup)
 {
     ipv4_t ip = read_ipv4("100.200.100.");
     EXPECT_EQ(ip.ip, 0);
@@ -125,7 +125,7 @@ TEST(IPv4Suite, InvalidIPv4LeadingZeroes)
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, ValidIPv4With0Block)
+TEST(IPv4Suite, ValidIPv4With0Group)
 {
     ipv4_t ip = read_ipv4("100.0.1.200");
     EXPECT_EQ(ip.ip, 1677722056);
