@@ -271,3 +271,73 @@ TEST(IPv6Suite, InvalidIPv6InvalidCharacterInPrefix)
     EXPECT_EQ(ip.ip[7], 0);
     EXPECT_EQ(ip.ps, 0);
 }
+
+TEST(IPv6Suite, ValidIPv6MappedFromIPv4)
+{
+    ipv6_t ip = read_ipv6("::ffff:192.0.2.128");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0xffff);
+    EXPECT_EQ(ip.ip[6], 0xc000);
+    EXPECT_EQ(ip.ip[7], 0x0280);
+    EXPECT_EQ(ip.ps, 128);
+}
+
+TEST(IPv6Suite, ValidIPv6MappedFromIPv4WithPrefix)
+{
+    ipv6_t ip = read_ipv6("::ffff:192.0.2.128/12");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0xffff);
+    EXPECT_EQ(ip.ip[6], 0xc000);
+    EXPECT_EQ(ip.ip[7], 0x0280);
+    EXPECT_EQ(ip.ps, 12);
+}
+
+TEST(IPv6Suite, ValidIPv6MappedFromIPv4WithIPv6Prefix)
+{
+    ipv6_t ip = read_ipv6("::ffff:192.0.2.128/64");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0xffff);
+    EXPECT_EQ(ip.ip[6], 0xc000);
+    EXPECT_EQ(ip.ip[7], 0x0280);
+    EXPECT_EQ(ip.ps, 64);
+}
+
+TEST(IPv6Suite, InvalidIPv6MappedFromIPv4)
+{
+    ipv6_t ip = read_ipv6("::ffff:c0.0.2.128");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0);
+    EXPECT_EQ(ip.ip[6], 0);
+    EXPECT_EQ(ip.ip[7], 0);
+    EXPECT_EQ(ip.ps, 0);
+}
+
+TEST(IPv6Suite, InvalidIPv6MappedFromIPv4WithEmptyIPv4Group)
+{
+    ipv6_t ip = read_ipv6("::ffff:.0.2.128");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0);
+    EXPECT_EQ(ip.ip[6], 0);
+    EXPECT_EQ(ip.ip[7], 0);
+    EXPECT_EQ(ip.ps, 0);
+}

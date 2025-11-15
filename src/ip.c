@@ -5,7 +5,15 @@
 #include <ctype.h>
 #include "ip.h"
 
-ipv4_t read_ipv4(const char *s)
+/**
+ * @brief Wrapper function for read_ipv4 that allows ignoring the prefix.
+ * Used when reading the IPv4 part of a mapped IPv4-to-IPv6 address.
+ * 
+ * @param s             String representing an IPv4 address.
+ * @param skip_prefix   0: check prefix as IPv4; > 0: skip reading and set prefix to 32.
+ * @return ipv4_t       IPv4 struct.
+ */
+ipv4_t read_ipv4_internal(const char *s, uint8_t skip_prefix)
 {
     ipv4_t ipv4;    // IPv4 address
     char c;         // character being evaluated
@@ -73,6 +81,10 @@ ipv4_t read_ipv4(const char *s)
                     goto error_handler;
                 }
                 ipv4.ip = (ipv4.ip << 8) + d;
+                if (skip_prefix == 1)
+                {
+                    goto final_check;
+                }
                 ipv4.ps = 0;
                 while ((c = s[p++]) != '\0')
                 {
@@ -116,6 +128,11 @@ error_handler:
     return ipv4;
 }
 
+ipv4_t read_ipv4(const char *s)
+{
+    return read_ipv4_internal(s, 0);
+}
+
 ipv6_t read_ipv6(const char *s)
 {
     ipv6_t ipv6;    // IPv6 address
@@ -124,7 +141,8 @@ ipv6_t read_ipv6(const char *s)
     uint8_t g = 0;  // group index
     uint8_t b = 0;  // number of group characters read
     int8_t z = -1;  // group index of "::" substring
-    
+    ipv4_t ip4;     // Helper variable for mapped IPv4
+
     for (g = 0; g < 8; g++)
     {
         ipv6.ip[g] = 0;
@@ -205,6 +223,15 @@ ipv6_t read_ipv6(const char *s)
                 }
                 goto final_check;
             case '.':
+                ip4 = read_ipv4_internal((char*)(s+p-b-1), 1);
+                if (ip4.ps == 0)
+                {
+                    goto error_handler;
+                }
+                ipv6.ip[g++] = ip4.ip >> 16;
+                ipv6.ip[g] = ip4.ip & 0xFFFF;
+                while (((c = s[p++]) != '/') && (c != '\0'));
+                p--;
                 break;
             case '\0':
                 if ((b == 0) && (z != g))
@@ -227,7 +254,6 @@ final_check:
             ipv6.ip[i] = ipv6.ip[i-(7-g)];
             ipv6.ip[i-(7-g)] = 0;
         }
-        fprintf(stderr, "Prefix size after shift is %d\n", ipv6.ps);
         g = 7;
     }
     if (g != 7)

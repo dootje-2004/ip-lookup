@@ -17,9 +17,9 @@
  * .ps is the prefix size, 32 for a fixed IP or
  * less than 32 for a network range.
  * 
- * A ps of 0 denotes an invalid IPv4 string: x.y.z.t/0 is
- * equivalent to the entire IPv4 address space and has
- * no practical purpose.
+ * A prefix size of 0 is used to denote an invalid IPv4
+ * string: x.y.z.t/0 is equivalent to the entire IPv4
+ * address space and has no practical purpose.
  */
 typedef struct {
     uint32_t ip;
@@ -29,12 +29,12 @@ typedef struct {
 /**
  * @brief IPv6 address type.
  * 
- * .group is an array of 8 16-bit numbers that together
+ * .ip is an array of 8 16-bit numbers that together
  * form the 128-bit IP address.
- * .ps is the number vof fixed bits, 128 for a fixed IP or
+ * .ps is the prefix size, 128 for a fixed IP or
  * less than that for a network range.
  * 
- * As with ipv4_t, as ps of 0 denotes an invalid IPv6 string.
+ * As with ipv4_t, as prefix size of 0 denotes an invalid IPv6 string.
  */
 typedef struct {
     uint16_t ip[8];
