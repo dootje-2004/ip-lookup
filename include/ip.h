@@ -14,31 +14,31 @@
  * @brief IPv4 address type.
  * 
  * .ip is the numerical 32-bit address value.
- * .mask is the number of fixed bits, 32 for a fixed IP or
+ * .ps is the prefix size, 32 for a fixed IP or
  * less than 32 for a network range.
  * 
- * A mask of 0 denotes an invalid IPv4 string: x.y.z.t/0 is
- * equivalent to the entire IPv4 address space and has
- * no practical purpose.
+ * A prefix size of 0 is used to denote an invalid IPv4
+ * string: x.y.z.t/0 is equivalent to the entire IPv4
+ * address space and has no practical purpose.
  */
 typedef struct {
     uint32_t ip;
-    uint8_t mask;
+    uint8_t ps;
 } ipv4_t;
 
 /**
  * @brief IPv6 address type.
  * 
- * .group is an array of 8 16-bit numbers that together
+ * .ip is an array of 8 16-bit numbers that together
  * form the 128-bit IP address.
- * .mask is the number vof fixed bits, 128 for a fixed IP or
+ * .ps is the prefix size, 128 for a fixed IP or
  * less than that for a network range.
  * 
- * As with ipv4_t, as mask of 0 denotes an invalid IPv6 string.
+ * As with ipv4_t, as prefix size of 0 denotes an invalid IPv6 string.
  */
 typedef struct {
-    uint16_t group[8];
-    uint8_t mask;
+    uint16_t ip[8];
+    uint8_t ps;
 } ipv6_t;
 
 /**
@@ -46,7 +46,7 @@ typedef struct {
  * Whitespace is not tolerated.
  * 
  * @return ipv4_t
- * Use .mask == 0 to check for invalid input.
+ * Use .ps == 0 to check for invalid input.
  */
 ipv4_t read_ipv4(const char*);
 
@@ -55,7 +55,13 @@ ipv4_t read_ipv4(const char*);
  * Whitespace is not tolerated.
  * 
  * @return ipv6_t
- * Use .mask == 0 to check for invalid input.
+ * Use .ps == 0 to check for invalid input.
+ * 
+ * This function converts strings that are logically correct.
+ * They may still be syntactically incorrect, though. E.g.,
+ * having leading zeroes in one group but not in another is
+ * perfectly fine. The same goes for zero-valued groups adjacent
+ * to '::'.
  */
 ipv6_t read_ipv6(const char*);
 
