@@ -194,6 +194,11 @@ ipv6_t read_ipv6(const char *s)
                 }
                 else
                 {
+                    if (b == 0)
+                    {
+                        fprintf(stderr, "IPv6 string %s has empty group at position %d\n", s, p-1);
+                        goto error_handler;
+                    }
                     if (p == 1)
                     {
                         fprintf(stderr, "IPv6 string %s must not start with a single colon\n", s);
