@@ -1,14 +1,15 @@
 set(Sources
-main.cpp ipv4.cpp ipv6.cpp
+main.cpp ipv4.cpp ipv6.cpp btree.cpp
 )
 
-set(TestName hello-test)
+set(TestName ip-test)
 
 add_executable(${TestName} ${Sources})
 
 target_link_libraries(${TestName} PUBLIC
     gtest_main
     iplib
+    btreelib
 )
 
 add_test(
