@@ -62,6 +62,20 @@ TEST(IPv6Suite, ValidIPv6NoLeadingZeroes)
     EXPECT_EQ(ip.ps, 128);
 }
 
+TEST(IPv6Suite, ValidIPv6MixedLeadingZeroes)
+{
+    ipv6_t ip = read_ipv6("2001:db8:85a3:000:0:8a2e:0370:7334");
+    EXPECT_EQ(ip.ip[0], 0x2001);
+    EXPECT_EQ(ip.ip[1], 0x0db8);
+    EXPECT_EQ(ip.ip[2], 0x85a3);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0x8a2e);
+    EXPECT_EQ(ip.ip[6], 0x0370);
+    EXPECT_EQ(ip.ip[7], 0x7334);
+    EXPECT_EQ(ip.ps, 128);
+}
+
 TEST(IPv6Suite, InvalidIPv6TooFewGroups)
 {
     ipv6_t ip = read_ipv6("2001:db8:85a3:0:0:8a2e:370");
@@ -340,4 +354,32 @@ TEST(IPv6Suite, InvalidIPv6MappedFromIPv4WithEmptyIPv4Group)
     EXPECT_EQ(ip.ip[6], 0);
     EXPECT_EQ(ip.ip[7], 0);
     EXPECT_EQ(ip.ps, 0);
+}
+
+TEST(IPv6Suite, ValidIPv6Localhost)
+{
+    ipv6_t ip = read_ipv6("::1");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0);
+    EXPECT_EQ(ip.ip[6], 0);
+    EXPECT_EQ(ip.ip[7], 1);
+    EXPECT_EQ(ip.ps, 128);
+}
+
+TEST(IPv6Suite, ValidIPv6Unspecified)
+{
+    ipv6_t ip = read_ipv6("::");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0);
+    EXPECT_EQ(ip.ip[6], 0);
+    EXPECT_EQ(ip.ip[7], 0);
+    EXPECT_EQ(ip.ps, 128);
 }

@@ -69,28 +69,28 @@ TEST(IPv4Suite, InvalidIPv4MaskIs0)
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyFirstGroup)
+TEST(IPv4Suite, InvalidIPv4EmptyGroup0)
 {
     ipv4_t ip = read_ipv4(".200.100.200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptySecondGroup)
+TEST(IPv4Suite, InvalidIPv4EmptyGroup1)
 {
     ipv4_t ip = read_ipv4("100..100.200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyThirdGroup)
+TEST(IPv4Suite, InvalidIPv4EmptyGroup2)
 {
     ipv4_t ip = read_ipv4("100.200..200");
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 0);
 }
 
-TEST(IPv4Suite, InvalidIPv4EmptyFourthGroup)
+TEST(IPv4Suite, InvalidIPv4EmptyGroup3)
 {
     ipv4_t ip = read_ipv4("100.200.100.");
     EXPECT_EQ(ip.ip, 0);

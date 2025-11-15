@@ -18,8 +18,8 @@ ipv4_t read_ipv4_internal(const char *s, uint8_t skip_prefix)
     ipv4_t ipv4;    // IPv4 address
     char c;         // character being evaluated
     uint8_t p = 0;  // position in s string
-    int16_t d = -1; // decimal group value
-    uint8_t g = 1;  // group index
+    int16_t d = -1; // decimal group value; -1 means uninitialized
+    uint8_t g = 0;  // group index
     uint8_t b = 0;  // position in group substring
     
     ipv4.ps = 32;
@@ -81,7 +81,7 @@ ipv4_t read_ipv4_internal(const char *s, uint8_t skip_prefix)
                     goto error_handler;
                 }
                 ipv4.ip = (ipv4.ip << 8) + d;
-                if (skip_prefix == 1)
+                if (skip_prefix != 0)
                 {
                     goto final_check;
                 }
@@ -106,7 +106,7 @@ ipv4_t read_ipv4_internal(const char *s, uint8_t skip_prefix)
     }
 
 final_check:
-    if (g != 4) {
+    if (g != 3) {
         fprintf(stderr, "IPv4 string %s has %d groups instead of 4\n", s, g);
         goto error_handler;
     }

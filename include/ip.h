@@ -56,6 +56,12 @@ ipv4_t read_ipv4(const char*);
  * 
  * @return ipv6_t
  * Use .ps == 0 to check for invalid input.
+ * 
+ * This function converts strings that are logically correct.
+ * They may still be syntactically incorrect, though. E.g.,
+ * having leading zeroes in one group but not in another is
+ * perfectly fine. The same goes for zero-valued groups adjacent
+ * to '::'.
  */
 ipv6_t read_ipv6(const char*);
 
