@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 #include "btree.h"
 #include "ip.h"
 
@@ -41,8 +42,36 @@ int insertIPv6(bnode_t* root,  const char* s)
     return 0;
 }
 
-uint32_t dumpIPv4Tree(bnode_t* root)
+void printIPv4(FILE *stream, ipv4_t ipv4)
 {
-    // TODO
-    return 0;
+    char s[19];
+    ip4string(s, ipv4);
+    fprintf(stream, "%s\n", s);
+}
+
+uint32_t dumpIPv4Recursively(bnode_t* node, uint8_t depth, uint32_t ip)
+{
+    uint32_t ctr = 0;   // Node counter
+    ipv4_t ipv4;
+
+    if (node == NULL)
+    {
+        return 0;
+    }
+    ctr += dumpIPv4Recursively(node->child[0], depth + 1, ip << 1);
+    ctr += dumpIPv4Recursively(node->child[1], depth + 1, (ip << 1) + 1);
+
+    if (ctr == 0)
+    {
+        ipv4.ip = ip;
+        ipv4.ps = depth;
+        printIPv4(stdout, ipv4);
+        ctr = 1;
+    }
+    return ctr;
+}
+
+uint32_t dumpIPv4Tree(bnode_t* node)
+{
+    return dumpIPv4Recursively(node, 0, 0);
 }
