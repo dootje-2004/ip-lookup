@@ -65,4 +65,10 @@ ipv4_t read_ipv4(const char*);
  */
 ipv6_t read_ipv6(const char*);
 
+/**
+ * @brief Converts an ipv4_t type to a human-readable
+ * null-terminated string.
+ */
+void ip4string(char*, ipv4_t);
+
 #endif

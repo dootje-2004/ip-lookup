@@ -286,3 +286,20 @@ error_handler:
     ipv6.ps = 0;
     return ipv6;
 }
+
+void ip4string(char* buf, ipv4_t ip)
+{
+    uint8_t g;      // group index
+    uint8_t p = 0;  // string index
+
+    for (g = 0; g < 3; g++)
+    {
+        p += sprintf(buf + p, "%d.", (ip.ip >> (3 - g) * 8) & 0xFF);
+    }
+    p += sprintf(buf + p, "%d", ip.ip & 0xFF);
+    if (ip.ps < 32)
+    {
+        p += sprintf(buf + p, "/%d", ip.ps);
+    }
+    buf[p++] = '\0';
+}

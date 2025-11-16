@@ -145,3 +145,38 @@ TEST(IPv4Suite, IPv4WithAllZeroes)
     EXPECT_EQ(ip.ip, 0);
     EXPECT_EQ(ip.ps, 32);
 }
+
+TEST(IPv4Suite, IPv4ToString)
+{
+    char s[] = "11.22.33.44";
+    char t[20];
+    ipv4_t ip = read_ipv4(s);
+    ip4string(t, ip);
+    EXPECT_STREQ(s, t);
+}
+
+TEST(IPv4Suite, IPv4ToStringWithMask)
+{
+    char s[] = "11.22.33.44/24";
+    char t[20];
+    ipv4_t ip = read_ipv4(s);
+    ip4string(t, ip);
+    EXPECT_STREQ(s, t);
+}
+
+TEST(IPv4Suite, IPv4ToStringMaxLength)
+{
+    char s[] = "111.222.111.222/28";
+    char t[19];
+    ipv4_t ip = read_ipv4(s);
+    ip4string(t, ip);
+    EXPECT_STREQ(s, t);
+}
+
+TEST(IPv4Suite, IPv4ToStringPrefix32)
+{
+    char t[19];
+    ipv4_t ip = read_ipv4("111.222.111.222/32");
+    ip4string(t, ip);
+    EXPECT_STREQ(t, "111.222.111.222");
+}

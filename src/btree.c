@@ -43,5 +43,6 @@ int insertIPv6(bnode_t* root,  const char* s)
 
 uint32_t dumpIPv4Tree(bnode_t* root)
 {
+    // TODO
     return 0;
 }
