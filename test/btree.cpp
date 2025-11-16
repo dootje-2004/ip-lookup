@@ -27,8 +27,8 @@ TEST(BTreeSuite, AddIPv4AllZeroes)
         p = p->child[0];
         d--;
     }
-    EXPECT_TRUE(p->child[0] == NULL);
-    EXPECT_TRUE(p->child[1] == NULL);
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 }
 
 TEST(BTreeSuite, AddIPv4AllOnes)
@@ -46,8 +46,8 @@ TEST(BTreeSuite, AddIPv4AllOnes)
         p = p->child[1];
         d--;
     }
-    EXPECT_TRUE(p->child[0] == NULL);
-    EXPECT_TRUE(p->child[1] == NULL);
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 }
 
 TEST(BTreeSuite, AddIPv4AllZeroesAndAllOnes)
@@ -70,8 +70,8 @@ TEST(BTreeSuite, AddIPv4AllZeroesAndAllOnes)
         p = p->child[0];
         d--;
     }
-    EXPECT_TRUE(p->child[0] == NULL);
-    EXPECT_TRUE(p->child[1] == NULL);
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 
     p = tree->child[1];
     d = 31;
@@ -82,8 +82,8 @@ TEST(BTreeSuite, AddIPv4AllZeroesAndAllOnes)
         p = p->child[1];
         d--;
     }
-    EXPECT_TRUE(p->child[0] == NULL);
-    EXPECT_TRUE(p->child[1] == NULL);
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 }
 
 TEST(BTreeSuite, AddIPv4AllOnesWithPrefix)
@@ -101,8 +101,8 @@ TEST(BTreeSuite, AddIPv4AllOnesWithPrefix)
         p = p->child[1];
         d--;
     }
-    EXPECT_TRUE(p->child[0] == NULL);
-    EXPECT_TRUE(p->child[1] == NULL);
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 }
 
 TEST(BTreeSuite, DumpIPv4Tree)
@@ -124,4 +124,51 @@ TEST(BTreeSuite, DumpIPv4Tree)
     std::cout << dumpIPv4Tree(tree);
     std::string output = testing::internal::GetCapturedStdout();
     EXPECT_STREQ(output.c_str(), "0.0.0.0\n1.2.3.4\n255.255.255.255\n3");
+}
+
+TEST(BTreeSuite, DumpIPv4TreeWithPrefix)
+{
+    char s0[] = "0.0.0.0";
+    char s1[] = "255.255.255.255/16";
+    char s2[] = "1.2.3.4/28";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+    insertIPv4(&tree, s2);
+
+    testing::internal::CaptureStdout();
+    std::cout << dumpIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "0.0.0.0\n1.2.3.0/28\n255.255.0.0/16\n3");
+}
+
+TEST(BTreeSuite, DumpIPv4TreeWithOverlappingRange)
+{
+    char s0[] = "1.2.3.4";
+    char s1[] = "1.2.3.4/28";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+
+    testing::internal::CaptureStdout();
+    std::cout << dumpIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "1.2.3.0/28\n1");
+}
+
+TEST(BTreeSuite, DumpIPv4TreeWithOverlappingRangeInReverseOrder)
+{
+    char s0[] = "1.2.3.4/28";
+    char s1[] = "1.2.3.4";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+
+    testing::internal::CaptureStdout();
+    std::cout << dumpIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "1.2.3.0/28\n1");
 }

@@ -11,7 +11,21 @@ bnode_t* createNode()
     return newNode;
 }
 
-int insertIPv4(bnode_t** root, const char* s)
+void deleteSubtree(bnode_t* node)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+    if (node != node->child[0])
+    {
+        deleteSubtree(node->child[0]);
+        deleteSubtree(node->child[1]);
+    }
+    free(node);
+}
+
+void insertIPv4(bnode_t** root, const char* s)
 {
     uint8_t d;  // Tree depth.
     uint8_t b;  // Byte value.
@@ -21,6 +35,10 @@ int insertIPv4(bnode_t** root, const char* s)
     p = *root;
     for (d = 0; d < ip.ps; d++)
     {
+        if (p == p->child[0])
+        {
+            return;
+        }
         b = ip.ip >> 31;
         if (p->child[b] == NULL)
         {
@@ -30,7 +48,10 @@ int insertIPv4(bnode_t** root, const char* s)
         p = p->child[b];
         ip.ip <<=1;
     }
-    return 0;
+    deleteSubtree(p->child[0]);
+    deleteSubtree(p->child[1]);
+    p->child[0] = p;
+    p->child[1] = p;
 }
 
 int insertIPv6(bnode_t* root,  const char* s)
@@ -49,21 +70,25 @@ void printIPv4(FILE *stream, ipv4_t ipv4)
     fprintf(stream, "%s\n", s);
 }
 
-uint32_t dumpIPv4Recursively(bnode_t* node, uint8_t depth, uint32_t ip)
+uint32_t dumpIPv4Recursive(bnode_t* node, uint8_t depth, uint32_t ip)
 {
     uint32_t ctr = 0;   // Node counter
-    ipv4_t ipv4;
+    ipv4_t ipv4;        // Helper variable
 
     if (node == NULL)
     {
         return 0;
     }
-    ctr += dumpIPv4Recursively(node->child[0], depth + 1, ip << 1);
-    ctr += dumpIPv4Recursively(node->child[1], depth + 1, (ip << 1) + 1);
+
+    if (node != node->child[0])
+    {
+        ctr += dumpIPv4Recursive(node->child[0], depth + 1, ip << 1);
+        ctr += dumpIPv4Recursive(node->child[1], depth + 1, (ip << 1) + 1);
+    }
 
     if (ctr == 0)
     {
-        ipv4.ip = ip;
+        ipv4.ip = ip << (32 - depth);
         ipv4.ps = depth;
         printIPv4(stdout, ipv4);
         ctr = 1;
@@ -73,5 +98,5 @@ uint32_t dumpIPv4Recursively(bnode_t* node, uint8_t depth, uint32_t ip)
 
 uint32_t dumpIPv4Tree(bnode_t* node)
 {
-    return dumpIPv4Recursively(node, 0, 0);
+    return dumpIPv4Recursive(node, 0, 0);
 }

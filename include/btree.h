@@ -25,7 +25,7 @@ bnode_t* createNode();
  * (or an encompassing range) already figures in the tree,
  * 2 if the address could not be added.
  */
-int insertIPv4(bnode_t**, const char*);
+void insertIPv4(bnode_t**, const char*);
 
 /**
  * @brief Adds an IPv6 string to a binary tree.
