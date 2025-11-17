@@ -116,14 +116,27 @@ TEST(BTreeSuite, DumpIPv4Tree)
     insertIPv4(&tree, s1);
     insertIPv4(&tree, s2);
 
-    // Source - https://stackoverflow.com/a
-    // Posted by Heinzi, modified by community. See post 'Timeline' for change history
-    // Retrieved 2025-11-16, License - CC BY-SA 4.0
-    
     testing::internal::CaptureStdout();
     std::cout << dumpIPv4Tree(tree);
     std::string output = testing::internal::GetCapturedStdout();
     EXPECT_STREQ(output.c_str(), "0.0.0.0\n1.2.3.4\n255.255.255.255\n3");
+}
+
+TEST(BTreeSuite, DumpIPv4TreeRepeatedIPs)
+{
+    char s0[] = "1.2.3.4";
+    char s1[] = "10.20.30.40";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+
+    testing::internal::CaptureStdout();
+    std::cout << dumpIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "1.2.3.4\n10.20.30.40\n2");
 }
 
 TEST(BTreeSuite, DumpIPv4TreeWithPrefix)

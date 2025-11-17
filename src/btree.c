@@ -48,18 +48,21 @@ void insertIPv4(bnode_t** root, const char* s)
         p = p->child[b];
         ip.ip <<=1;
     }
-    deleteSubtree(p->child[0]);
-    deleteSubtree(p->child[1]);
-    p->child[0] = p;
-    p->child[1] = p;
+    if ( p->child[0] != p)
+    {
+        deleteSubtree(p->child[0]);
+        deleteSubtree(p->child[1]);
+        p->child[0] = p;
+        p->child[1] = p;
+    }
 }
 
 int insertIPv6(bnode_t* root,  const char* s)
 {
     // TODO
     read_ipv6(s);
-    (*root).child[0] = NULL;
-    (*root).child[1] = NULL;
+    root->child[0] = NULL;
+    root->child[1] = NULL;
     return 0;
 }
 

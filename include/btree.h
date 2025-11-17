@@ -5,6 +5,8 @@
  * Its value (0 or 1) is not stored, but follows from its parent:
  * if the parent node points via .child[0], this node represents 0,
  * and similarly for .child[1].
+ * 
+ * A leaf node has both child nodes pointing back to itself.
  */
 typedef struct node
 {
