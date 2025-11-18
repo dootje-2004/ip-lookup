@@ -2,7 +2,7 @@
 
 extern "C"
 {
-    #include "ip.h"
+#include "ip.h"
 }
 
 TEST(IPv6Suite, ValidIPv6ConstantFullForm)
