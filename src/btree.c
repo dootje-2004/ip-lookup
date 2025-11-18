@@ -27,9 +27,9 @@ void deleteSubtree(bnode_t* node)
 
 void insertIPv4(bnode_t** root, const char* s)
 {
-    uint8_t d;  // Tree depth.
-    uint8_t b;  // Byte value.
-    bnode_t* p; // Node pointer;
+    uint8_t d;  // tree depth.
+    uint8_t b;  // byte value.
+    bnode_t* p; // node pointer;
 
     ipv4_t ip = read_ipv4(s);
     p = *root;
@@ -73,10 +73,10 @@ void printIPv4(FILE *stream, ipv4_t ipv4)
     fprintf(stream, "%s\n", s);
 }
 
-uint32_t dumpIPv4Recursive(bnode_t* node, uint8_t depth, uint32_t ip)
+uint32_t walkIPv4Recursive(bnode_t* node, uint8_t depth, uint32_t ip, uint8_t printIPs)
 {
-    uint32_t ctr = 0;   // Node counter
-    ipv4_t ipv4;        // Helper variable
+    uint32_t ctr = 0;   // address counter
+    ipv4_t ipv4;        // helper variable
 
     if (node == NULL)
     {
@@ -85,15 +85,18 @@ uint32_t dumpIPv4Recursive(bnode_t* node, uint8_t depth, uint32_t ip)
 
     if (node != node->child[0])
     {
-        ctr += dumpIPv4Recursive(node->child[0], depth + 1, ip << 1);
-        ctr += dumpIPv4Recursive(node->child[1], depth + 1, (ip << 1) + 1);
+        ctr += walkIPv4Recursive(node->child[0], depth + 1, ip << 1, printIPs);
+        ctr += walkIPv4Recursive(node->child[1], depth + 1, (ip << 1) + 1, printIPs);
     }
 
     if (ctr == 0)
     {
         ipv4.ip = ip << (32 - depth);
         ipv4.ps = depth;
-        printIPv4(stdout, ipv4);
+        if (printIPs)
+        {
+            printIPv4(stdout, ipv4);
+        }
         ctr = 1;
     }
     return ctr;
@@ -101,5 +104,47 @@ uint32_t dumpIPv4Recursive(bnode_t* node, uint8_t depth, uint32_t ip)
 
 uint32_t dumpIPv4Tree(bnode_t* node)
 {
-    return dumpIPv4Recursive(node, 0, 0);
+    return walkIPv4Recursive(node, 0, 0, 1);
+}
+
+uint32_t countIPv4Tree(bnode_t* node)
+{
+    return walkIPv4Recursive(node, 0, 0, 0);
+}
+
+bnode_t* createIPv4TreeFromFile(const char* filename)
+{
+    const uint8_t MAX_IP_LEN = 44;
+    bnode_t* root = createNode();
+    FILE* fp = fopen(filename, "r");
+    char buf[MAX_IP_LEN];
+    char c;         // helper variable
+    uint8_t p = 0;  // string index
+
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Error opening file %s\n", filename);
+        exit(EXIT_FAILURE);
+    }
+
+    while ((c = getc(fp)) != EOF)
+    {
+        if ((c == ' ') || (c == '\n') || (c == '\r') || (c == '\t') || (c == EOF))
+        {
+            buf[p++] = '\0';
+            insertIPv4(&root, buf);
+            for (p = 0; p < MAX_IP_LEN; p++)
+            {
+                buf[p] = '\0';
+            }
+            p = 0;
+        }
+        else
+        {
+            buf[p++] = c;
+        }
+    }
+    
+    fclose(fp);
+    return root;
 }

@@ -185,3 +185,62 @@ TEST(BTreeSuite, DumpIPv4TreeWithOverlappingRangeInReverseOrder)
     std::string output = testing::internal::GetCapturedStdout();
     EXPECT_STREQ(output.c_str(), "1.2.3.0/28\n1");
 }
+
+TEST(BTreeSuite, CountIPv4TreeSingleAddress)
+{
+    char s0[] = "1.2.3.4";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+
+    testing::internal::CaptureStdout();
+    std::cout << countIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "1");
+}
+
+TEST(BTreeSuite, CountIPv4TreeMultipleAddresses)
+{
+    char s0[] = "1.2.3.4";
+    char s1[] = "10.20.30.40";
+    char s2[] = "91.92.93.94";
+    char s3[] = "11.22.33.44";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+    insertIPv4(&tree, s2);
+    insertIPv4(&tree, s3);
+
+    testing::internal::CaptureStdout();
+    std::cout << countIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "4");
+}
+
+TEST(BTreeSuite, CountIPv4TreeOverlappingRanges)
+{
+    char s0[] = "1.2.3.4/28";
+    char s1[] = "1.2.3.4/24";
+    bnode_t* tree = createNode();
+
+    insertIPv4(&tree, s0);
+    insertIPv4(&tree, s1);
+
+    testing::internal::CaptureStdout();
+    std::cout << countIPv4Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "1");
+}
+
+TEST(BTreeSuite, CreateTreeFromFileWithOneAddress)
+{
+    bnode_t* tree = createIPv4TreeFromFile("../test/data/ipv4single.txt");
+    EXPECT_EQ(countIPv4Tree(tree), 1);
+}
+
+TEST(BTreeSuite, CreateTreeFromFileWithSeveralAddresses)
+{
+    bnode_t* tree = createIPv4TreeFromFile("../test/data/ipv4list_tiny.txt");
+    EXPECT_EQ(countIPv4Tree(tree), 10);
+}

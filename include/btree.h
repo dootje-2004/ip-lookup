@@ -44,3 +44,18 @@ int insertIPv6(bnode_t*, const char*);
  * @return uint32_t  The number of addresses in the tree.
  */
 uint32_t dumpIPv4Tree(bnode_t*);
+
+/**
+ * @brief Returns the number of addresses in an IPv4 tree.
+ * 
+ * @return uint32_t  Number of addresses.
+ */
+uint32_t countIPv4Tree(bnode_t*);
+
+/**
+ * @brief Returns a pointer to the root of an IPv4 tree,
+ * filled with the addresses read from a text file.
+ * 
+ * @return bnode_t*  Pointer to the root of the IPv4 tree.
+ */
+bnode_t* createIPv4TreeFromFile(const char*);
