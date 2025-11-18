@@ -250,3 +250,59 @@ TEST(BTreeSuite, CreateTreeFromLargeFile)
     bnode_t *tree = createIPv4TreeFromFile("../test/data/inbound.txt");
     EXPECT_GT(countIPv4Tree(tree), 1000000);
 }
+
+TEST(BTreeSuite, FindIPv4InSmallFile)
+{
+    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4list.txt");
+    EXPECT_EQ(findIPv4(tree, "1.2.3.4"), 1);
+    EXPECT_EQ(findIPv4(tree, "2.3.4.5"), 1);
+    EXPECT_EQ(findIPv4(tree, "3.4.5.6"), 1);
+    EXPECT_EQ(findIPv4(tree, "4.5.6.7"), 1);
+    EXPECT_EQ(findIPv4(tree, "5.6.7.8"), 1);
+    EXPECT_EQ(findIPv4(tree, "10.20.30.40"), 1);
+    EXPECT_EQ(findIPv4(tree, "20.30.40.50"), 1);
+    EXPECT_EQ(findIPv4(tree, "30.40.50.60"), 1);
+    EXPECT_EQ(findIPv4(tree, "40.50.60.70"), 1);
+    EXPECT_EQ(findIPv4(tree, "50.60.70.80"), 1);
+
+    EXPECT_EQ(findIPv4(tree, "1.2.3.3"), 0);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.5"), 0);
+}
+
+TEST(BTreeSuite, FindIPv4InRange)
+{
+    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    EXPECT_EQ(findIPv4(tree, "1.2.3.0"), 1);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.15"), 1);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.16"), 0);
+    EXPECT_EQ(findIPv4(tree, "2.3.1.0"), 1);
+    EXPECT_EQ(findIPv4(tree, "2.3.15.0"), 1);
+    EXPECT_EQ(findIPv4(tree, "2.3.16.0"), 0);
+}
+
+TEST(BTreeSuite, FindIPv4InRangeWithMask24)
+{
+    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    EXPECT_EQ(findIPv4(tree, "3.4.5.0"), 1);
+    EXPECT_EQ(findIPv4(tree, "3.4.5.127"), 1);
+    EXPECT_EQ(findIPv4(tree, "3.4.5.255"), 1);
+    EXPECT_EQ(findIPv4(tree, "3.4.4.0"), 0);
+    EXPECT_EQ(findIPv4(tree, "3.4.6.0"), 0);
+}
+
+TEST(BTreeSuite, FindIPv4InRangeWithMask31)
+{
+    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    EXPECT_EQ(findIPv4(tree, "6.7.8.7"), 0);
+    EXPECT_EQ(findIPv4(tree, "6.7.8.8"), 1);
+    EXPECT_EQ(findIPv4(tree, "6.7.8.9"), 1);
+    EXPECT_EQ(findIPv4(tree, "6.7.8.10"), 0);
+}
+
+TEST(BTreeSuite, FindIPv4Range)
+{
+    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    EXPECT_EQ(findIPv4(tree, "1.2.3.4/28"), 1);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.4/29"), 1);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.4/27"), 0);
+}

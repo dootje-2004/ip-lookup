@@ -61,8 +61,8 @@ uint32_t countIPv4Tree(bnode_t *);
 bnode_t *createIPv4TreeFromFile(const char *);
 
 /**
- * @brief Checks if an IPv4 string occurs in an IPv4 tree.
+ * @brief Checks if an IPv4 address occurs in an IPv4 tree.
  *
  * @return uint8_t  1 if found, 0 if not.
  */
-uint8_t findIPv4InTree(bnode_t *, char *);
+uint8_t findIPv4(bnode_t *, const char *);

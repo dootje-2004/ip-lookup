@@ -154,7 +154,20 @@ bnode_t *createIPv4TreeFromFile(const char *filename)
     return root;
 }
 
-uint8_t findIPv4InTree(bnode_t *root, char *s)
+uint8_t findIPv4(bnode_t *root, const char *ipv4_string)
 {
-    // TODO
+    ipv4_t ipv4 = read_ipv4(ipv4_string);
+    if (ipv4.ps == 0)
+    {
+        return 0;
+    }
+
+    bnode_t *tree_ptr = root;
+    while ((tree_ptr != NULL) && (tree_ptr != tree_ptr->child[0]) && (ipv4.ps > 0))
+    {
+        tree_ptr = tree_ptr->child[ipv4.ip >> 31];
+        ipv4.ip <<= 1;
+        ipv4.ps--;
+    }
+    return !((tree_ptr == NULL) || (tree_ptr != tree_ptr->child[0]));
 }
