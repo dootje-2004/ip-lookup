@@ -303,6 +303,7 @@ TEST(BTreeSuite, FindIPv4Range)
 {
     bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/28"), 1);
+    EXPECT_EQ(findIPv4(tree, "1.2.3.0"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/29"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/27"), 0);
 }
