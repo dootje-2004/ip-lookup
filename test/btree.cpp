@@ -235,25 +235,25 @@ TEST(BTreeSuite, CountIPv4TreeOverlappingRanges)
 
 TEST(BTreeSuite, CreateTreeFromTinyFile)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4single.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4single.txt");
     EXPECT_EQ(countIPv4Tree(tree), 1);
 }
 
 TEST(BTreeSuite, CreateTreeFromSmallFile)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4list.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4list.txt");
     EXPECT_EQ(countIPv4Tree(tree), 10);
 }
 
 TEST(BTreeSuite, CreateTreeFromLargeFile)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/inbound.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/inbound.txt");
     EXPECT_GT(countIPv4Tree(tree), 1000000);
 }
 
 TEST(BTreeSuite, FindIPv4InSmallFile)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4list.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4list.txt");
     EXPECT_EQ(findIPv4(tree, "1.2.3.4"), 1);
     EXPECT_EQ(findIPv4(tree, "2.3.4.5"), 1);
     EXPECT_EQ(findIPv4(tree, "3.4.5.6"), 1);
@@ -271,7 +271,7 @@ TEST(BTreeSuite, FindIPv4InSmallFile)
 
 TEST(BTreeSuite, FindIPv4InRange)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4range.txt");
     EXPECT_EQ(findIPv4(tree, "1.2.3.0"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.15"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.16"), 0);
@@ -282,7 +282,7 @@ TEST(BTreeSuite, FindIPv4InRange)
 
 TEST(BTreeSuite, FindIPv4InRangeWithMask24)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4range.txt");
     EXPECT_EQ(findIPv4(tree, "3.4.5.0"), 1);
     EXPECT_EQ(findIPv4(tree, "3.4.5.127"), 1);
     EXPECT_EQ(findIPv4(tree, "3.4.5.255"), 1);
@@ -292,7 +292,7 @@ TEST(BTreeSuite, FindIPv4InRangeWithMask24)
 
 TEST(BTreeSuite, FindIPv4InRangeWithMask31)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4range.txt");
     EXPECT_EQ(findIPv4(tree, "6.7.8.7"), 0);
     EXPECT_EQ(findIPv4(tree, "6.7.8.8"), 1);
     EXPECT_EQ(findIPv4(tree, "6.7.8.9"), 1);
@@ -301,9 +301,22 @@ TEST(BTreeSuite, FindIPv4InRangeWithMask31)
 
 TEST(BTreeSuite, FindIPv4Range)
 {
-    bnode_t *tree = createIPv4TreeFromFile("../test/data/ipv4range.txt");
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4range.txt");
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/28"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.0"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/29"), 1);
     EXPECT_EQ(findIPv4(tree, "1.2.3.4/27"), 0);
+}
+
+TEST(BTreeSuite, FindInvalidIPv4)
+{
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/ip-lookup/test/data/ipv4list.txt");
+    EXPECT_EQ(findIPv4(tree, "1.2.3."), 0);
+}
+
+TEST(BTreeSuite, InvalidInputFile)
+{
+    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/non-existent.txt");
+    EXPECT_TRUE(tree->child[0] == NULL);
+    EXPECT_TRUE(tree->child[1] == NULL);
 }

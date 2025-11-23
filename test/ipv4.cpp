@@ -97,6 +97,13 @@ TEST(IPv4Suite, InvalidIPv4EmptyGroup3)
     EXPECT_EQ(ip.ps, 0);
 }
 
+TEST(IPv4Suite, InvalidIPv4EmptyGroup3WithPrefix)
+{
+    ipv4_t ip = read_ipv4("100.200.100./24");
+    EXPECT_EQ(ip.ip, 0);
+    EXPECT_EQ(ip.ps, 0);
+}
+
 TEST(IPv4Suite, InvalidIPv4InvalidCharacter)
 {
     ipv4_t ip = read_ipv4("a.200.100.200");

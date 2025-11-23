@@ -36,7 +36,7 @@ void insertIPv4(bnode_t *, const char *);
  * (or an encompassing range) already figures in the tree,
  * 2 if the address could not be added.
  */
-int insertIPv6(bnode_t *, const char *);
+// int insertIPv6(bnode_t *, const char *);
 
 /**
  * @brief Prints all IP addresses in a binary tree to stdout.
@@ -55,6 +55,8 @@ uint32_t countIPv4Tree(bnode_t *);
 /**
  * @brief Returns a pointer to the root of an IPv4 tree,
  * filled with the addresses read from a text file.
+ * If there is an error opening the text file, an empty
+ * node (child[0] and child[1] both NULL) is returned.
  *
  * @return bnode_t*  Pointer to the root of the IPv4 tree.
  */

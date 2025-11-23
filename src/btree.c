@@ -62,14 +62,14 @@ void insertIPv4(bnode_t *root, const char *s)
     }
 }
 
-int insertIPv6(bnode_t *root, const char *s)
-{
-    // TODO
-    read_ipv6(s);
-    root->child[0] = NULL;
-    root->child[1] = NULL;
-    return 0;
-}
+// int insertIPv6(bnode_t *root, const char *s)
+// {
+//     // TODO
+//     read_ipv6(s);
+//     root->child[0] = NULL;
+//     root->child[1] = NULL;
+//     return 0;
+// }
 
 void printIPv4(FILE *stream, ipv4_t ipv4)
 {
@@ -129,7 +129,7 @@ bnode_t *createIPv4TreeFromFile(const char *filename)
     if (fp == NULL)
     {
         fprintf(stderr, "Error opening file %s\n", filename);
-        exit(EXIT_FAILURE);
+        return root;
     }
 
     while ((c = getc(fp)) != EOF)
