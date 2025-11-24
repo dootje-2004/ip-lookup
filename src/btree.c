@@ -27,7 +27,6 @@ void deleteSubtree(bnode_t *node)
 
 void insertIPv4(bnode_t *root, const char *s)
 {
-    uint8_t depth;
     uint8_t byte;
     bnode_t *node_ptr;
 
@@ -38,7 +37,7 @@ void insertIPv4(bnode_t *root, const char *s)
     }
 
     node_ptr = root;
-    for (depth = 0; depth < ip.ps; depth++)
+    for (uint8_t depth = 0; depth < ip.ps; depth++)
     {
         if (node_ptr == node_ptr->child[0])
         {
@@ -62,14 +61,46 @@ void insertIPv4(bnode_t *root, const char *s)
     }
 }
 
-// int insertIPv6(bnode_t *root, const char *s)
-// {
-//     // TODO
-//     read_ipv6(s);
-//     root->child[0] = NULL;
-//     root->child[1] = NULL;
-//     return 0;
-// }
+void insertIPv6(bnode_t *root, const char *s)
+{
+    uint8_t byte;
+    bnode_t *node_ptr;
+    uint8_t group_index = 0;
+
+    ipv6_t ip = read_ipv6(s);
+    if (ip.ps == 0)
+    {
+        return;
+    }
+
+    node_ptr = root;
+    for (uint8_t depth = 0; depth < ip.ps; depth++)
+    {
+        if (node_ptr == node_ptr->child[0])
+        {
+            return;
+        }
+        byte = ip.ip[group_index] >> 15;
+        if (node_ptr->child[byte] == NULL)
+        {
+            bnode_t *childNode = createNode();
+            node_ptr->child[byte] = childNode;
+        }
+        node_ptr = node_ptr->child[byte];
+        ip.ip[group_index] <<= 1;
+        if ((depth % 16) == 15)
+        {
+            group_index++;
+        }
+    }
+    if (node_ptr->child[0] != node_ptr)
+    {
+        deleteSubtree(node_ptr->child[0]);
+        deleteSubtree(node_ptr->child[1]);
+        node_ptr->child[0] = node_ptr;
+        node_ptr->child[1] = node_ptr;
+    }
+}
 
 void printIPv4(FILE *stream, ipv4_t ipv4)
 {
@@ -78,25 +109,25 @@ void printIPv4(FILE *stream, ipv4_t ipv4)
     fprintf(stream, "%s\n", s);
 }
 
-uint32_t walkIPv4Recursive(bnode_t *node, uint8_t depth, uint32_t ip, uint8_t printIPs)
+uint32_t walkIPv4Recursive(bnode_t **node, uint8_t depth, uint32_t ip, uint8_t printIPs)
 {
     uint32_t counter = 0;
     ipv4_t ipv4;
-
-    if (node == NULL)
+    
+    if (*node == NULL)
     {
         return 0;
     }
-
-    if (node != node->child[0])
+    
+    if (*node != (*node)->child[0])
     {
-        counter += walkIPv4Recursive(node->child[0], depth + 1, ip << 1, printIPs);
-        counter += walkIPv4Recursive(node->child[1], depth + 1, (ip << 1) + 1, printIPs);
+        counter += walkIPv4Recursive(&((*node)->child[0]), depth + 1, ip << 1, printIPs);
+        counter += walkIPv4Recursive(&((*node)->child[1]), depth + 1, (ip << 1) + 1, printIPs);
     }
-
+    
     if (counter == 0)
     {
-        ipv4.ip = ip << (32 - depth);
+        ipv4.ip = depth > 0 ? ip << (32 - depth) : 0;
         ipv4.ps = depth;
         if (printIPs)
         {
@@ -109,12 +140,12 @@ uint32_t walkIPv4Recursive(bnode_t *node, uint8_t depth, uint32_t ip, uint8_t pr
 
 uint32_t dumpIPv4Tree(bnode_t *node)
 {
-    return walkIPv4Recursive(node, 0, 0, 1);
+    return walkIPv4Recursive(&node, 0, 0, 1);
 }
 
 uint32_t countIPv4Tree(bnode_t *node)
 {
-    return walkIPv4Recursive(node, 0, 0, 0);
+    return walkIPv4Recursive(&node, 0, 0, 0);
 }
 
 bnode_t *createIPv4TreeFromFile(const char *filename)
@@ -123,7 +154,7 @@ bnode_t *createIPv4TreeFromFile(const char *filename)
     bnode_t *root = createNode();
     FILE *fp = fopen(filename, "r");
     char buffer[MAX_IP_LEN];
-    char c;
+    int c;
     uint8_t buffer_index = 0;
 
     if (fp == NULL)
@@ -146,7 +177,7 @@ bnode_t *createIPv4TreeFromFile(const char *filename)
         }
         else
         {
-            buffer[buffer_index++] = c;
+            buffer[buffer_index++] = (char)c;
         }
     }
 
@@ -162,12 +193,12 @@ uint8_t findIPv4(bnode_t *root, const char *ipv4_string)
         return 0;
     }
 
-    bnode_t *tree_ptr = root;
-    while ((tree_ptr != NULL) && (tree_ptr != tree_ptr->child[0]) && (ipv4.ps > 0))
+    bnode_t **tree_ptr = &root;
+    while ((*tree_ptr != NULL) && (*tree_ptr != (*tree_ptr)->child[0]) && (ipv4.ps > 0))
     {
-        tree_ptr = tree_ptr->child[ipv4.ip >> 31];
+        *tree_ptr = (*tree_ptr)->child[ipv4.ip >> 31];
         ipv4.ip <<= 1;
         ipv4.ps--;
     }
-    return !((tree_ptr == NULL) || (tree_ptr != tree_ptr->child[0]));
+    return !((*tree_ptr == NULL) || (*tree_ptr != (*tree_ptr)->child[0]));
 }

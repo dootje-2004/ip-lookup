@@ -36,7 +36,7 @@ void insertIPv4(bnode_t *, const char *);
  * (or an encompassing range) already figures in the tree,
  * 2 if the address could not be added.
  */
-// int insertIPv6(bnode_t *, const char *);
+void insertIPv6(bnode_t *, const char *);
 
 /**
  * @brief Prints all IP addresses in a binary tree to stdout.

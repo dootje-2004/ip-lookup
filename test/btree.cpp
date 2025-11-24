@@ -7,23 +7,23 @@ extern "C"
 
 TEST(BTreeSuite, NewEmptyTree)
 {
-    bnode_t *tree = createNode();
-    EXPECT_TRUE(tree->child[0] == NULL);
-    EXPECT_TRUE(tree->child[1] == NULL);
+    const bnode_t *tree = createNode();
+    EXPECT_TRUE(tree->child[0] == nullptr);
+    EXPECT_TRUE(tree->child[1] == nullptr);
 }
 
 TEST(BTreeSuite, AddIPv4AllZeroes)
 {
     char s[] = "0.0.0.0";
     bnode_t *tree = createNode();
-    bnode_t *p = tree;
+    const bnode_t *p = tree;
     uint8_t d = 32;
 
     insertIPv4(tree, s);
     while (d)
     {
-        EXPECT_FALSE(p->child[0] == NULL);
-        EXPECT_TRUE(p->child[1] == NULL);
+        EXPECT_FALSE(p->child[0] == nullptr);
+        EXPECT_TRUE(p->child[1] == nullptr);
         p = p->child[0];
         d--;
     }
@@ -35,14 +35,14 @@ TEST(BTreeSuite, AddIPv4AllOnes)
 {
     char s[] = "255.255.255.255";
     bnode_t *tree = createNode();
-    bnode_t *p = tree;
+    const bnode_t *p = tree;
     uint8_t d = 32;
 
     insertIPv4(tree, s);
     while (d)
     {
-        EXPECT_TRUE(p->child[0] == NULL);
-        EXPECT_FALSE(p->child[1] == NULL);
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
         p = p->child[1];
         d--;
     }
@@ -55,18 +55,18 @@ TEST(BTreeSuite, AddIPv4AllZeroesAndAllOnes)
     char s0[] = "0.0.0.0";
     char s1[] = "255.255.255.255";
     bnode_t *tree = createNode();
-    bnode_t *p = tree;
+    const bnode_t *p = tree;
     uint8_t d = 31;
 
     insertIPv4(tree, s0);
     insertIPv4(tree, s1);
-    EXPECT_FALSE(p->child[0] == NULL);
-    EXPECT_FALSE(p->child[1] == NULL);
+    EXPECT_FALSE(p->child[0] == nullptr);
+    EXPECT_FALSE(p->child[1] == nullptr);
     p = tree->child[0];
     while (d)
     {
-        EXPECT_FALSE(p->child[0] == NULL);
-        EXPECT_TRUE(p->child[1] == NULL);
+        EXPECT_FALSE(p->child[0] == nullptr);
+        EXPECT_TRUE(p->child[1] == nullptr);
         p = p->child[0];
         d--;
     }
@@ -77,8 +77,8 @@ TEST(BTreeSuite, AddIPv4AllZeroesAndAllOnes)
     d = 31;
     while (d)
     {
-        EXPECT_TRUE(p->child[0] == NULL);
-        EXPECT_FALSE(p->child[1] == NULL);
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
         p = p->child[1];
         d--;
     }
@@ -90,14 +90,14 @@ TEST(BTreeSuite, AddIPv4AllOnesWithPrefix)
 {
     char s[] = "255.255.255.0/24";
     bnode_t *tree = createNode();
-    bnode_t *p = tree;
+    const bnode_t *p = tree;
     uint8_t d = 24;
 
     insertIPv4(tree, s);
     while (d)
     {
-        EXPECT_TRUE(p->child[0] == NULL);
-        EXPECT_FALSE(p->child[1] == NULL);
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
         p = p->child[1];
         d--;
     }
@@ -316,7 +316,81 @@ TEST(BTreeSuite, FindInvalidIPv4)
 
 TEST(BTreeSuite, InvalidInputFile)
 {
-    bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/non-existent.txt");
-    EXPECT_TRUE(tree->child[0] == NULL);
-    EXPECT_TRUE(tree->child[1] == NULL);
+    const bnode_t *tree = createIPv4TreeFromFile("/home/aldo/git/non-existent.txt");
+    EXPECT_TRUE(tree->child[0] == nullptr);
+    EXPECT_TRUE(tree->child[1] == nullptr);
+}
+
+TEST(BTreeSuite, AddIPv6AllZeroes)
+{
+    char s[] = "::";
+    bnode_t *tree = createNode();
+    const bnode_t *p = tree;
+    uint8_t d = 128;
+
+    insertIPv6(tree, s);
+    while (d)
+    {
+        EXPECT_FALSE(p->child[0] == nullptr);
+        EXPECT_TRUE(p->child[1] == nullptr);
+        p = p->child[0];
+        d--;
+    }
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
+}
+
+TEST(BTreeSuite, AddIPv6AllOnes)
+{
+    char s[] = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
+    bnode_t *tree = createNode();
+    const bnode_t *p = tree;
+    uint8_t d = 128;
+
+    insertIPv6(tree, s);
+    while (d)
+    {
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
+        p = p->child[1];
+        d--;
+    }
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
+}
+
+TEST(BTreeSuite, AddIPv6AllZeroesAndAllOnes)
+{
+    char s0[] = "::";
+    char s1[] = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
+    bnode_t *tree = createNode();
+    const bnode_t *p = tree;
+    uint8_t d = 127;
+
+    insertIPv6(tree, s0);
+    insertIPv6(tree, s1);
+    EXPECT_FALSE(p->child[0] == nullptr);
+    EXPECT_FALSE(p->child[1] == nullptr);
+    p = tree->child[0];
+    while (d)
+    {
+        EXPECT_FALSE(p->child[0] == nullptr);
+        EXPECT_TRUE(p->child[1] == nullptr);
+        p = p->child[0];
+        d--;
+    }
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
+
+    p = tree->child[1];
+    d = 127;
+    while (d)
+    {
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
+        p = p->child[1];
+        d--;
+    }
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
 }

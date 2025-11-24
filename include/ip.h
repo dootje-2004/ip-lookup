@@ -63,13 +63,13 @@ ipv4_t read_ipv4(const char *);
  * They may still be syntactically incorrect, though. E.g.,
  * having leading zeroes in one group but not in another is
  * perfectly fine. The same goes for zero-valued groups adjacent
- * to '::'.
+ * to '::'. Mixing uppercase and lowercase hexadecimals is also
+ * allowed.
  */
 ipv6_t read_ipv6(const char *);
 
 /**
- * @brief Converts an ipv4_t type to a human-readable
- * null-terminated string.
+ * @brief Converts an ipv4_t type to a human-readable null-terminated string.
  */
 void ip4string(char *, ipv4_t);
 
