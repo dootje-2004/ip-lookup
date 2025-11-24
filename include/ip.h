@@ -73,4 +73,9 @@ ipv6_t read_ipv6(const char *);
  */
 void ip4string(char *, ipv4_t);
 
+/**
+ * @brief Converts an ipv6_t type to a human-readable null-terminated string.
+ */
+void ip6string(char *, ipv6_t);
+
 #endif

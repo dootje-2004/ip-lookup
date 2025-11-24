@@ -439,12 +439,28 @@ void ip4string(char *string_buffer, ipv4_t ip)
 {
     uint8_t string_index = 0;
 
-    for (uint8_t group_index = 0; group_index < 3; group_index++)
+    for (uint8_t group_index = 0; group_index < 4; group_index++)
     {
         string_index += sprintf(string_buffer + string_index, "%d.", (ip.ip >> (3 - group_index) * 8) & 0xFF);
     }
-    string_index += sprintf(string_buffer + string_index, "%d", ip.ip & 0xFF);
+    string_index--;
     if (ip.ps < 32)
+    {
+        string_index += sprintf(string_buffer + string_index, "/%d", ip.ps);
+    }
+    string_buffer[string_index++] = '\0';
+}
+
+void ip6string(char *string_buffer, ipv6_t ip)
+{
+    uint8_t string_index = 0;
+
+    for (uint8_t group_index = 0; group_index < 8; group_index++)
+    {
+        string_index += sprintf(string_buffer + string_index, "%x:", ip.ip[group_index]);
+    }
+    string_index--;
+    if (ip.ps < 128)
     {
         string_index += sprintf(string_buffer + string_index, "/%d", ip.ps);
     }

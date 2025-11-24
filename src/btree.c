@@ -109,7 +109,7 @@ void printIPv4(FILE *stream, ipv4_t ipv4)
     fprintf(stream, "%s\n", s);
 }
 
-uint32_t walkIPv4Recursive(bnode_t **node, uint8_t depth, uint32_t ip, uint8_t printIPs)
+uint32_t walkIPv4Recursive(bnode_t **node, uint8_t depth, const uint32_t ip, const uint8_t printIPs)
 {
     uint32_t counter = 0;
     ipv4_t ipv4;
@@ -201,4 +201,95 @@ uint8_t findIPv4(bnode_t *root, const char *ipv4_string)
         ipv4.ps--;
     }
     return !((*tree_ptr == NULL) || (*tree_ptr != (*tree_ptr)->child[0]));
+}
+
+void bitshiftLeft(uint16_t *lst, const uint8_t shift)
+{
+    uint8_t groupShift = shift / 16;
+    uint8_t remainingShift = shift % 16;
+    uint8_t i;
+
+    for (i = 0; i < (8 - groupShift); i++)
+    {
+        lst[i] = lst[i + groupShift];
+    }
+    for (i = 8 - groupShift; i < 8; i++)
+    {
+        lst[i] = 0;
+    }
+    for (i = 0; i < 8; i++)
+    {
+        lst[i] = (uint16_t)(lst[i] << remainingShift);
+        if (i == 7)
+        {
+            break;
+        }
+        lst[i] += lst[i+1] >> (16 - remainingShift);
+    }
+}
+
+void printIPv6(FILE *stream, ipv6_t ipv6)
+{
+    char s[44];
+    ip6string(s, ipv6);
+    fprintf(stream, "%s\n", s);
+}
+
+uint32_t walkIPv6Recursive(bnode_t **node, const uint8_t depth, const uint16_t *ip, const uint8_t printIPs)
+{
+    uint32_t counter = 0;
+    ipv6_t ipv6;
+    uint16_t ipShift0[8];
+    uint16_t ipShift1[8];
+    uint16_t ipCopy[8];
+    uint8_t i;
+
+    if (*node == NULL)
+    {
+        return 0;
+    }
+    
+    if (*node != (*node)->child[0])
+    {
+        for (i = 0; i < 8; i++)
+        {
+            ipShift0[i] = ip[i];
+            ipShift1[i] = ip[i];
+        }
+        bitshiftLeft(ipShift0, 1);
+        bitshiftLeft(ipShift1, 1);
+        ipShift1[7] += 1;
+        counter += walkIPv6Recursive(&((*node)->child[0]), depth + 1, ipShift0, printIPs);
+        counter += walkIPv6Recursive(&((*node)->child[1]), depth + 1, ipShift1, printIPs);
+    }
+    
+    if (counter == 0)
+    {
+        for (i = 0; i < 8; i++)
+        {
+            ipCopy[i] = ip[i];
+        }
+        bitshiftLeft(ipCopy, 128 - depth);
+        for (i = 0; i < 8; i++)
+        {
+            ipv6.ip[i] = ipCopy[i];
+        }
+        ipv6.ps = depth;
+        if (printIPs)
+        {
+            printIPv6(stdout, ipv6);
+        }
+        counter = 1;
+    }
+    return counter;
+}
+
+uint32_t dumpIPv6Tree(bnode_t *node)
+{
+    uint16_t ip[8];
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        ip[i] = 0;
+    }
+    return walkIPv6Recursive(&node, 0, ip, 1);
 }

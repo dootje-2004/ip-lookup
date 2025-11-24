@@ -394,3 +394,127 @@ TEST(BTreeSuite, AddIPv6AllZeroesAndAllOnes)
     EXPECT_TRUE(p->child[0] == p);
     EXPECT_TRUE(p->child[1] == p);
 }
+
+TEST(BTreeSuite, AddIPv6AllOnesWithPrefix)
+{
+    char s[] = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/120";
+    bnode_t *tree = createNode();
+    const bnode_t *p = tree;
+    uint8_t d = 120;
+
+    insertIPv6(tree, s);
+    while (d)
+    {
+        EXPECT_TRUE(p->child[0] == nullptr);
+        EXPECT_FALSE(p->child[1] == nullptr);
+        p = p->child[1];
+        d--;
+    }
+    EXPECT_TRUE(p->child[0] == p);
+    EXPECT_TRUE(p->child[1] == p);
+}
+
+TEST(BTreeSuite, BitshiftLeftBy1)
+{
+    uint16_t ip[8];
+    ip[0] = 1;
+    ip[1] = 2;
+    ip[2] = 4;
+    ip[3] = 8;
+    ip[4] = 16;
+    ip[5] = 32;
+    ip[6] = 64;
+    ip[7] = 128;
+    bitshiftLeft(ip, 1);
+    EXPECT_EQ(ip[0], 2);
+    EXPECT_EQ(ip[1], 4);
+    EXPECT_EQ(ip[2], 8);
+    EXPECT_EQ(ip[3], 16);
+    EXPECT_EQ(ip[4], 32);
+    EXPECT_EQ(ip[5], 64);
+    EXPECT_EQ(ip[6], 128);
+    EXPECT_EQ(ip[7], 256);
+}
+
+TEST(BTreeSuite, BitshiftLeftBy16)
+{
+    uint16_t ip[8];
+    ip[0] = 1;
+    ip[1] = 2;
+    ip[2] = 4;
+    ip[3] = 8;
+    ip[4] = 16;
+    ip[5] = 32;
+    ip[6] = 64;
+    ip[7] = 128;
+    bitshiftLeft(ip, 16);
+    EXPECT_EQ(ip[0], 2);
+    EXPECT_EQ(ip[1], 4);
+    EXPECT_EQ(ip[2], 8);
+    EXPECT_EQ(ip[3], 16);
+    EXPECT_EQ(ip[4], 32);
+    EXPECT_EQ(ip[5], 64);
+    EXPECT_EQ(ip[6], 128);
+    EXPECT_EQ(ip[7], 0);
+}
+
+TEST(BTreeSuite, BitshiftLeftBy127)
+{
+    uint16_t ip[8];
+    ip[0] = 1;
+    ip[1] = 2;
+    ip[2] = 4;
+    ip[3] = 8;
+    ip[4] = 16;
+    ip[5] = 32;
+    ip[6] = 64;
+    ip[7] = 127;
+    bitshiftLeft(ip, 127);
+    EXPECT_EQ(ip[0], 32768);
+    EXPECT_EQ(ip[1], 0);
+    EXPECT_EQ(ip[2], 0);
+    EXPECT_EQ(ip[3], 0);
+    EXPECT_EQ(ip[4], 0);
+    EXPECT_EQ(ip[5], 0);
+    EXPECT_EQ(ip[6], 0);
+    EXPECT_EQ(ip[7], 0);
+}
+
+TEST(BTreeSuite, BitshiftLeftBy128)
+{
+    uint16_t ip[8];
+    ip[0] = 1;
+    ip[1] = 2;
+    ip[2] = 4;
+    ip[3] = 8;
+    ip[4] = 16;
+    ip[5] = 32;
+    ip[6] = 64;
+    ip[7] = 128;
+    bitshiftLeft(ip, 128);
+    EXPECT_EQ(ip[0], 0);
+    EXPECT_EQ(ip[1], 0);
+    EXPECT_EQ(ip[2], 0);
+    EXPECT_EQ(ip[3], 0);
+    EXPECT_EQ(ip[4], 0);
+    EXPECT_EQ(ip[5], 0);
+    EXPECT_EQ(ip[6], 0);
+    EXPECT_EQ(ip[7], 0);
+}
+
+TEST(BTreeSuite, DumpIPv6Tree)
+{
+    char s0[] = "::";
+    char s1[] = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";
+    char s2[] = "1:2:3:4:5:6:7:8";
+    bnode_t *tree = createNode();
+
+    insertIPv6(tree, s0);
+    insertIPv6(tree, s1);
+    insertIPv6(tree, s2);
+
+    testing::internal::CaptureStdout();
+    std::cout << dumpIPv6Tree(tree);
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_STREQ(output.c_str(), "0:0:0:0:0:0:0:0\n1:2:3:4:5:6:7:8\nffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff\n3");
+}

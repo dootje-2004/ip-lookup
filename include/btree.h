@@ -39,7 +39,7 @@ void insertIPv4(bnode_t *, const char *);
 void insertIPv6(bnode_t *, const char *);
 
 /**
- * @brief Prints all IP addresses in a binary tree to stdout.
+ * @brief Prints all IP addresses in an IPv4 tree to stdout.
  *
  * @return uint32_t  The number of addresses in the tree.
  */
@@ -68,3 +68,12 @@ bnode_t *createIPv4TreeFromFile(const char *);
  * @return uint8_t  1 if found, 0 if not.
  */
 uint8_t findIPv4(bnode_t *, const char *);
+
+/**
+ * @brief Prints all IP addresses in an IPv6 tree to stdout.
+ *
+ * @return uint32_t  The number of addresses in the tree.
+ */
+uint32_t dumpIPv6Tree(bnode_t *);
+
+void bitshiftLeft(uint16_t *, const uint8_t);
