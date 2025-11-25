@@ -1,3 +1,13 @@
+/**
+ * @file btree.h
+ * @author Aldo Verlinde (aldo.verlinde@gmail.com)
+ * @brief BTree library public header file.
+ * @version 0.1
+ * @date 2025-11-25
+ */
+#ifndef BTREE_H_
+#define BTREE_H_
+
 #include "ip.h"
 
 /**
@@ -101,3 +111,5 @@ bnode_t *createIPv6TreeFromFile(const char *);
  * @return uint8_t  1 if found, 0 if not.
  */
 uint8_t findIPv6(bnode_t *, const char *);
+
+#endif

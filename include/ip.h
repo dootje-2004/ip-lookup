@@ -1,7 +1,7 @@
 /**
  * @file ip.h
  * @author Aldo Verlinde (aldo.verlinde@gmail.com)
- * @brief IP library header file.
+ * @brief IP library public header file.
  * @version 0.1
  * @date 2025-11-14
  */
@@ -9,6 +9,13 @@
 #define IP_H_
 
 #include <stdint.h>
+
+/**
+ * @brief arpa/inet.h defines INET_ADDRSTRLEN and INET6_ADDRSTRLEN,
+ * but those do not account for IP ranges.
+ */
+#define IPSTRLENV4 20
+#define IPSTRLENV6 50
 
 /**
  * @brief IPv4 address type.
@@ -35,7 +42,7 @@ typedef struct
  * .ps is the prefix size, 128 for a fixed IP or
  * less than that for a network range.
  *
- * As with ipv4_t, as prefix size of 0 denotes an invalid IPv6 string.
+ * As with ipv4_t, as prefix size of 0 signals an invalid string.
  */
 typedef struct
 {
@@ -44,18 +51,20 @@ typedef struct
 } ipv6_t;
 
 /**
- * @brief Converts a null-terminated string to ipv4_t.
+ * @brief Converts a string to ipv4_t.
  * Whitespace is not tolerated.
  *
+ * @param ipv4_string  Null-terminated input string.
  * @return ipv4_t
  * Use .ps == 0 to check for invalid input.
  */
-ipv4_t read_ipv4(const char *);
+ipv4_t read_ipv4(const char *ipv4_string);
 
 /**
  * @brief Converts a null-terminated string to ipv6_t.
  * Whitespace is not tolerated.
  *
+ * @param ipv6_string  Null-terminated input string.
  * @return ipv6_t
  * Use .ps == 0 to check for invalid input.
  *
@@ -66,16 +75,22 @@ ipv4_t read_ipv4(const char *);
  * to '::'. Mixing uppercase and lowercase hexadecimals is also
  * allowed.
  */
-ipv6_t read_ipv6(const char *);
+ipv6_t read_ipv6(const char *ipv6_string);
 
 /**
- * @brief Converts an ipv4_t type to a human-readable null-terminated string.
+ * @brief Converts an ipv4_t type to a human-readable string.
+ * 
+ * @param string_buffer  Holds the resulting null-terminated string.
+ * @param ip             Input.
  */
-void ip4string(char *, ipv4_t);
+void ipv4tostring(char *string_buffer, ipv4_t ip);
 
 /**
- * @brief Converts an ipv6_t type to a human-readable null-terminated string.
+ * @brief Converts an ipv6_t type to a human-readable string.
+ * 
+ * @param string_buffer  Holds the resulting null-terminated string.
+ * @param ip             Input.
  */
-void ip6string(char *, ipv6_t);
+void ipv6tostring(char *string_buffer, ipv6_t ip);
 
 #endif

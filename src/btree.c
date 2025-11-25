@@ -105,7 +105,7 @@ void insertIPv6(bnode_t *root, const char *s)
 void printIPv4(FILE *stream, ipv4_t ipv4)
 {
     char s[19];
-    ip4string(s, ipv4);
+    ipv4tostring(s, ipv4);
     fprintf(stream, "%s\n", s);
 }
 
@@ -231,7 +231,7 @@ void bitshiftLeft(uint16_t *lst, const uint8_t shift)
 void printIPv6(FILE *stream, ipv6_t ipv6)
 {
     char s[44];
-    ip6string(s, ipv6);
+    ipv6tostring(s, ipv6);
     fprintf(stream, "%s\n", s);
 }
 
