@@ -77,3 +77,27 @@ uint8_t findIPv4(bnode_t *, const char *);
 uint32_t dumpIPv6Tree(bnode_t *);
 
 void bitshiftLeft(uint16_t *, const uint8_t);
+
+/**
+ * @brief Returns the number of addresses in an IPv6 tree.
+ *
+ * @return uint32_t  Number of addresses.
+ */
+uint32_t countIPv6Tree(bnode_t *);
+
+/**
+ * @brief Returns a pointer to the root of an IPv6 tree,
+ * filled with the addresses read from a text file.
+ * If there is an error opening the text file, an empty
+ * node (with child[0] == child[1] == NULL) is returned.
+ *
+ * @return bnode_t*  Pointer to the root of the IPv6 tree.
+ */
+bnode_t *createIPv6TreeFromFile(const char *);
+
+/**
+ * @brief Checks if an IPv6 address occurs in an IPv6 tree.
+ *
+ * @return uint8_t  1 if found, 0 if not.
+ */
+uint8_t findIPv6(bnode_t *, const char *);

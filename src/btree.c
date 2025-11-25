@@ -293,3 +293,69 @@ uint32_t dumpIPv6Tree(bnode_t *node)
     }
     return walkIPv6Recursive(&node, 0, ip, 1);
 }
+
+uint32_t countIPv6Tree(bnode_t *node)
+{
+    uint16_t ip[8];
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        ip[i] = 0;
+    }
+    return walkIPv6Recursive(&node, 0, ip, 0);
+}
+
+bnode_t *createIPv6TreeFromFile(const char *filename)
+{
+    const uint8_t MAX_IP_LEN = 44;
+    bnode_t *root = createNode();
+    FILE *fp = fopen(filename, "r");
+    char buffer[MAX_IP_LEN];
+    int c;
+    uint8_t buffer_index = 0;
+
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Error opening file %s\n", filename);
+        return root;
+    }
+
+    while ((c = getc(fp)) != EOF)
+    {
+        if ((c == ' ') || (c == '\n') || (c == '\r') || (c == '\t') || (c == EOF))
+        {
+            buffer[buffer_index++] = '\0';
+            insertIPv6(root, buffer);
+            for (buffer_index = 0; buffer_index < MAX_IP_LEN; buffer_index++)
+            {
+                buffer[buffer_index] = '\0';
+            }
+            buffer_index = 0;
+        }
+        else
+        {
+            buffer[buffer_index++] = (char)c;
+        }
+    }
+
+    fclose(fp);
+    return root;
+}
+
+uint8_t findIPv6(bnode_t *root, const char *ipv6_string)
+{
+    ipv6_t ipv6 = read_ipv6(ipv6_string);
+
+    if (ipv6.ps == 0)
+    {
+        return 0;
+    }
+
+    bnode_t **tree_ptr = &root;
+    while ((*tree_ptr != NULL) && (*tree_ptr != (*tree_ptr)->child[0]) && (ipv6.ps > 0))
+    {
+        *tree_ptr = (*tree_ptr)->child[ipv6.ip[0] >> 15];
+        bitshiftLeft(ipv6.ip, 1);
+        ipv6.ps--;
+    }
+    return !((*tree_ptr == NULL) || (*tree_ptr != (*tree_ptr)->child[0]));
+}
