@@ -1,19 +1,19 @@
-set(Sources
-main.cpp ipv4.cpp ipv6.cpp
+set(TESTNAME ip-test)
+
+set(SOURCES
+    ipv4.cpp 
+    ipv6.cpp 
+    btree.cpp
 )
 
-set(TestName hello-test)
+add_executable(${TESTNAME} ${SOURCES})
 
-add_executable(${TestName} ${Sources})
-
-target_link_libraries(${TestName} PUBLIC
-    gtest_main
+target_link_libraries(${TESTNAME} PUBLIC
+    GTest::gtest_main
     iplib
+    btreelib
 )
 
-add_test(
-    NAME ${TestName}
-    COMMAND ${TestName}
-)
+gtest_discover_tests(${TESTNAME})
 
-add_dependencies(coverage ${TestName})
+enable_coverage(${TESTNAME})

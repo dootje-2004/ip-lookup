@@ -2,7 +2,7 @@
 
 extern "C"
 {
-    #include "ip.h"
+#include "ip.h"
 }
 
 TEST(IPv6Suite, ValidIPv6ConstantFullForm)
@@ -382,4 +382,18 @@ TEST(IPv6Suite, ValidIPv6Unspecified)
     EXPECT_EQ(ip.ip[6], 0);
     EXPECT_EQ(ip.ip[7], 0);
     EXPECT_EQ(ip.ps, 128);
+}
+
+TEST(IPv6Suite, InvalidIPv6TripleColon)
+{
+    ipv6_t ip = read_ipv6(":::ffff:c000:0280");
+    EXPECT_EQ(ip.ip[0], 0);
+    EXPECT_EQ(ip.ip[1], 0);
+    EXPECT_EQ(ip.ip[2], 0);
+    EXPECT_EQ(ip.ip[3], 0);
+    EXPECT_EQ(ip.ip[4], 0);
+    EXPECT_EQ(ip.ip[5], 0);
+    EXPECT_EQ(ip.ip[6], 0);
+    EXPECT_EQ(ip.ip[7], 0);
+    EXPECT_EQ(ip.ps, 0);
 }
