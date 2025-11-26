@@ -1,7 +1,7 @@
 /**
  * @file btree.h
  * @author Aldo Verlinde (aldo.verlinde@gmail.com)
- * @brief BTree library public header file.
+ * @brief Library header for binary tree holding IP addresses.
  * @version 0.1
  * @date 2025-11-25
  */

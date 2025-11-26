@@ -14,8 +14,8 @@
  * @brief arpa/inet.h defines INET_ADDRSTRLEN and INET6_ADDRSTRLEN,
  * but those do not account for IP range notation.
  */
-constexpr uint8_t IPSTRLENV4 = 20;
-constexpr uint8_t IPSTRLENV6 = 50;
+#define IPSTRLENV4 20
+#define IPSTRLENV6 50
 
 /**
  * @brief IPv4 address type.
