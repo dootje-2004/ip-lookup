@@ -152,7 +152,7 @@ ipv6_t empty_ipv6()
     return ip;
 }
 
-uint16_t switchHiLoBytes(uint16_t i)
+uint16_t reverseBytes(uint16_t i)
 {
     return (i >> 8) | (uint16_t)(i << 8);
 }
@@ -161,7 +161,7 @@ void reverseBytesIPv6(const uint16_t *src, uint16_t *dest)
 {
     for (uint8_t i = 0; i < 8; i++)
     {
-        dest[i] = switchHiLoBytes(src[i]);
+        dest[i] = reverseBytes(src[i]);
     }
 }
 

@@ -12,7 +12,7 @@
 
 /**
  * @brief arpa/inet.h defines INET_ADDRSTRLEN and INET6_ADDRSTRLEN,
- * but those do not account for IP ranges.
+ * but those do not account for IP range notation.
  */
 #define IPSTRLENV4 20
 #define IPSTRLENV6 50
@@ -52,21 +52,20 @@ typedef struct
 
 /**
  * @brief Converts a string to ipv4_t.
- * Whitespace is not tolerated.
  *
  * @param ipv4_string  Null-terminated input string.
  * @return ipv4_t
+ *
+ * Whitespace is not tolerated.
  * Use .ps == 0 to check for invalid input.
  */
 ipv4_t read_ipv4(const char *ipv4_string);
 
 /**
  * @brief Converts a null-terminated string to ipv6_t.
- * Whitespace is not tolerated.
  *
  * @param ipv6_string  Null-terminated input string.
  * @return ipv6_t
- * Use .ps == 0 to check for invalid input.
  *
  * This function converts strings that are logically correct.
  * They may still be syntactically incorrect, though. E.g.,
@@ -74,6 +73,8 @@ ipv4_t read_ipv4(const char *ipv4_string);
  * perfectly fine. The same goes for zero-valued groups adjacent
  * to '::'. Mixing uppercase and lowercase hexadecimals is also
  * allowed.
+ * Whitespace is not tolerated.
+ * Use .ps == 0 to check for invalid input.
  */
 ipv6_t read_ipv6(const char *ipv6_string);
 

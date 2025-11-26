@@ -30,7 +30,7 @@ ipv6_t empty_ipv6();
  * @param i          Input.
  * @return uint16_t  Integer with bytes swapped.
  */
-uint16_t switchHiLoBytes(uint16_t i);
+uint16_t reverseBytes(uint16_t i);
 
 /**
  * @brief Converts an AF_INET address to an integer with
