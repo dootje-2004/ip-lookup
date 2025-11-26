@@ -14,8 +14,8 @@
  * @brief arpa/inet.h defines INET_ADDRSTRLEN and INET6_ADDRSTRLEN,
  * but those do not account for IP range notation.
  */
-#define IPSTRLENV4 20
-#define IPSTRLENV6 50
+constexpr uint8_t IPSTRLENV4 = 20;
+constexpr uint8_t IPSTRLENV6 = 50;
 
 /**
  * @brief IPv4 address type.
@@ -42,7 +42,7 @@ typedef struct
  * .ps is the prefix size, 128 for a fixed IP or
  * less than that for a network range.
  *
- * As with ipv4_t, as prefix size of 0 signals an invalid string.
+ * As with ipv4_t, a prefix size of 0 signals an invalid string.
  */
 typedef struct
 {
