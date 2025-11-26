@@ -516,7 +516,7 @@ TEST(BTreeSuite, DumpIPv6Tree)
     testing::internal::CaptureStdout();
     std::cout << dumpIPv6Tree(tree);
     std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_STREQ(output.c_str(), "0:0:0:0:0:0:0:0\n1:2:3:4:5:6:7:8\nffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff\n3");
+    EXPECT_STREQ(output.c_str(), "::\n1:2:3:4:5:6:7:8\nffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff\n3");
 }
 
 TEST(BTreeSuite, DumpIPv6TreeRepeatedIPs)
@@ -550,7 +550,7 @@ TEST(BTreeSuite, DumpIPv6TreeWithPrefix)
     testing::internal::CaptureStdout();
     std::cout << dumpIPv6Tree(tree);
     std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_STREQ(output.c_str(), "0:0:0:0:0:0:0:0\n1:2:3:4:5:6:7:0/120\n10:20:30:40:50:60:0:0/104\n3");
+    EXPECT_STREQ(output.c_str(), "::\n1:2:3:4:5:6:7:0/120\n10:20:30:40:50:60::/104\n3");
 }
 
 TEST(BTreeSuite, DumpIPv6TreeWithOverlappingRange)

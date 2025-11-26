@@ -1,10 +1,6 @@
 set(TESTNAME ip-test)
 
-set(SOURCES
-    ipv4.cpp 
-    ipv6.cpp 
-    btree.cpp
-)
+set(SOURCES ipv4.cpp ipv6.cpp iphelper.cpp btree.cpp)
 
 add_executable(${TESTNAME} ${SOURCES})
 

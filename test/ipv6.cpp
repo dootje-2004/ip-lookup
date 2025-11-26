@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
+#include <arpa/inet.h>
 
 extern "C"
 {
 #include "ip.h"
+#include "ip_unittest.h"
 }
 
 TEST(IPv6Suite, ValidIPv6ConstantFullForm)
